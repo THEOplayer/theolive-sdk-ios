@@ -2,7 +2,7 @@
 
 ## Getting started
 
-To play a video from a HESP.live channel:
+To play a video from a THEOlive channel:
  - Create a `TheoLiveChannelController`:
    - with optional parameter `disableAudio`: prevents the player form processing audio, which could be useful in a multi-player setup with identical audio streams
  - Call its `loadChannel(configuration)` method to load a channel. `configuration` is an object where you can specify the following properties:
