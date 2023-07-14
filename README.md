@@ -1,74 +1,87 @@
 # THEOliveSDK
 
-## Getting started
+## Add dependency using CocoaPods
 
-To play a video from a THEOlive channel:
- - Create a `TheoLiveChannelController`:
-   - with optional parameter `disableAudio`: prevents the player form processing audio, which could be useful in a multi-player setup with identical audio streams
- - Call its `loadChannel(configuration)` method to load a channel. `configuration` is an object where you can specify the following properties:
-   - `channelID`
-   - `abrStrategy`
-   - `showControlsOverlay`
-   - `videoScaleType`
+- Create a Podfile if you don't already have one. From the root of your project directory, run the following command: `pod init`
+- Add `THEOliveSDK` as a dependency in your Podfile: `pod 'THEOliveSDK', '1.0.0'`
+- Install the pods using `pod install` , then open your `.xcworkspace` file to see the project in Xcode.
 
- - Use the `TheoLiveChannelView` to present the rendered video in a UIView along with some basic playback controls. Each TheoLiveChannelView is connected to one TheoLiveChannelController (passed in the initialisation), serves as a wrapper around the playerLayer and can be used to animate, reposition, resize, ... the stream output.
+## Embedding a player in your app
 
-### UIKit example
+Import the SDK
 
-```swift
-import UIKit
+```
 import THEOliveSDK
-
-class ViewController: UIViewController {
-    var channelController: TheoLiveChannelController?
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        let channelController = TheoLiveChannelController(disableAudio: false)
-        self.channelController = channelController
-
-        let sampleConfig = TheoLiveChannelController.Configuration(
-          channelID: "43zv5lk11zh8498th3ejzscj5",
-          abrStrategy: .AVERAGE_QUALITY,
-          showControlsOverlay: true,
-          videoScaleType: .RESIZE_ASPECT_FILL
-        )
-        channelController.loadChannel(sampleConfig)
-                
-        let playerView = TheoLiveChannelView(
-            channelController: channelController
-        )
-        playerView.frame = CGRect(
-            origin: [0,50],
-            size: [view.bounds.width, 200]
-        )
-        playerView.autoresizingMask = [.flexibleWidth]
-        playerView.translatesAutoresizingMaskIntoConstraints = true
-        
-        view.addSubview(playerView)
-
-        // Do any additional setup after loading the view.
-    }
-
-}
 ```
 
-### SwiftUI example
+Create a `PlayerViewController` instance
 
-To use the `TheoLiveChannelView` in SwiftUI it can be wrapped in a SwiftUI View like this: 
-```swift
-struct PlayerWrapper<Controller: ObservableTheoLiveChannelController>: UIViewRepresentable {
-    let channelController: Controller
-    
-    func updateUIView(_ uiView: UIViewType, context: Context) {}
-    
-    func makeUIView(context: Context) -> UIView {
-        TheoLiveChannelView(channelController: channelController)
-    }
-}
+```swift swift
+let playerViewController = PlayerViewController()
 ```
 
-### Any further questions?
+Then embed this view controller in one of your own view controllers
 
-please contact us @ Theo
+```
+let yourViewController = UIViewController(nibName: nil, bundle: nil)
+yourViewController.addChild(playerViewController)
+yourViewController.view.addSubview(playerViewController.view)
+playerViewController.didMove(toParent: yourViewController)
+```
+
+## Player Details
+### PlayerViewController
+
+The PlayerViewController is a `UIKit` UIViewController that shows the contents of your channel.
+
+| Property / Method                                        | Description                                                                     |
+| :------------------------------------------------------- | :------------------------------------------------------------------------------ |
+| var player: Player                                       | An object to control the media player that is assigned to this view controller. |
+| var presentationMode: PresentationMode { get }           | Returns the current presentation mode.                                          |
+| func request(presentationMode: PresentationMode) -> Void | Set the mode to 'fullscreen' or 'inline'.                                       |
+
+### Player
+
+A media player that plays channels from THEO.live
+
+**Properties** 
+
+| Property    | Type   | Description                                                                                                                                   |
+| :---------- | :----- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
+| muted       | Bool   | Get or set whether the audio is muted.                                                                                                        |
+| paused      | Bool   | Returns whether the player is paused.                                                                                                         |
+| volume      | Float  | Get or set the current volume percentage as a floating point value between 0 and 1. (Not supported on iOS safari due to browser restrictions) |
+| currentTime | Double | The time of the playhead in seconds.                                                                                                          |
+
+ **Methods** 
+
+| Method                                                       | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| play()                                                       | Start or resume playback.                                    |
+| pause()                                                      | Pause playback.                                              |
+| goLive()                                                     | Seek to the time that is closest to live.                    |
+| loadChannel(channelId: string)                               | Load a channel.<br />  _channelId_: The id of the channel to load. |
+| addEventListener(type: string, listener: (event: Event) -> Void) | Add a event listener for the given event type.               |
+| removeEventListener(type: string, listener: (event: Event) -> Void) | Remove a previously registered event listener.               |
+| reset()                                                      | Resets the player. This will stop playback and reset the state. |
+
+
+
+**Player Events**
+
+| Event name    | Description                                                                                                                                        |
+| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| play          | Fired when the player is no longer paused, when play() is called or autoplay is enabled.                                                           |
+| pause         | Fired when the player is paused, when pause() is called.                                                                                           |
+| playing       | Fired when the player is not paused and starts progressing playback, so initially when the player starts or when the player recovers from a stall. |
+| waiting       | Fired when the player is not paused but stops progressing, when the buffer is empty.                                                               |
+| volumechange  | Fired when either the volume or the muted property changes.  (Not supported on iOS safari due to browser restrictions)                             |
+| channelloaded | Fired when the player has loaded a channel.                                                                                                        |
+| error         | Fired when the player enters a state from which it cannot recover without a new loadChannel call.                                                  |
+
+### PresentationMode
+
+| case        | Description                                                     |
+| :---------- | :-------------------------------------------------------------- |
+| .inline     | The video is visible in between other UI components of your app |
+| .fullscreen | The video is covering the entire screen                         |
