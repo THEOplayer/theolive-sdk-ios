@@ -9,7 +9,7 @@
 ## Embedding a player in your app
 
 To play a video from a THEO.live channel:
- - create create a ``THEOlivePlayer``
+ - create a ``THEOlivePlayer``
  - call ``loadChannel(_:)`` to load a channel
  - use the ``THEOlivePlayerViewController`` to present the rendered video in a UIView along with some basic playback controls or use the ``THEOliveChromelessPlayerViewController`` when you want no controls overlays.
 
