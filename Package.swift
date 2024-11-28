@@ -10,8 +10,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "THEOliveSDK",
-            url: "https://cdn.theo.live/artifacts/apple/THEOlive-3.18.1-rc.1.xcframework.zip",
-            checksum: "9ede0bb60f402fd9e6ef49ce67c959dd7911eebc8961397a33557b74547413ec"
+            url: "https://cdn.theo.live/artifacts/apple/THEOlive-3.18.1-rc.2.xcframework.zip",
+            checksum: "6071cce012d648d1c40334db1bdc9ee8768eb71c80c19148d5a1ea37050ee4eb"
         ),
     ]
 )
