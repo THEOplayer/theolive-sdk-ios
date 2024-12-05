@@ -13,7 +13,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/THEOplayer/theolive-sdk-ios", 
-      .upToNextMinor(from: "3.18.2") // or `.upToNextMajor
+      .upToNextMinor(from: "3.18.3") // or `.upToNextMajor
     )
   ],
   targets: [
